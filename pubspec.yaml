@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  ledgr_core:
+    path: ../ledgr_core
 
 dev_dependencies:
   flutter_test:

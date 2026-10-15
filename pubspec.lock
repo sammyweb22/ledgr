@@ -91,6 +91,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
+  ledgr_core:
+    dependency: "direct main"
+    description:
+      path: "../ledgr_core"
+      relative: true
+    source: path
+    version: "1.0.0"
   lints:
     dependency: transitive
     description:
