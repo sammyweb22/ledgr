@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ledgr_core/ledgr_core.dart';
+
+import 'data/sample_data.dart';
+import 'screens/home_screen.dart';
 
 void main() {
   runApp(const MainApp());
@@ -11,11 +13,10 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Ledgr ${Category.food.emoji} ${formatCents(1250)}'),
-        ),
-      ),
+      title: 'Ledgr',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(colorSchemeSeed: Colors.teal),
+      home: HomeScreen(tracker: createSampleTracker()),
     );
   }
 }
