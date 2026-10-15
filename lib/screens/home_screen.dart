@@ -18,8 +18,10 @@ class _HomeScreenState extends State<HomeScreen> {
       context,
       MaterialPageRoute(builder: (context) => const AddExpenseScreen()),
     );
-    if (expense == null || !mounted)
-      return; // user pressed back, or the screen is gone
+    // User pressed back, or the screen is gone.
+    if (expense == null || !mounted) {
+      return;
+    } // user pressed back, or the screen is gone
 
     setState(() {
       widget.tracker.add(expense);
