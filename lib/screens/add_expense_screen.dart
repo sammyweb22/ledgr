@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ledgr_core/ledgr_core.dart';
 
+import '../utils/format.dart';
+
 class AddExpenseScreen extends StatefulWidget {
   const AddExpenseScreen({super.key});
 
@@ -120,7 +122,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.calendar_today),
-              title: Text('${_date.day}/${_date.month}/${_date.year}'),
+              title: Text(formatDate(_date)),
               trailing: const Text('Change'),
               onTap: _pickDate,
             ),
