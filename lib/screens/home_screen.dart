@@ -18,10 +18,9 @@ class _HomeScreenState extends State<HomeScreen> {
       context,
       MaterialPageRoute(builder: (context) => const AddExpenseScreen()),
     );
-    // User pressed back, or the screen is gone.
     if (expense == null || !mounted) {
       return;
-    } // user pressed back, or the screen is gone
+    }
 
     setState(() {
       widget.tracker.add(expense);
@@ -30,8 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final expenses =
-        widget.tracker.sorted; // newest first, thanks to your getter
+    final expenses = widget.tracker.sorted;
     final now = DateTime.now();
     final monthTotal = widget.tracker.totalForMonth(now.year, now.month);
 

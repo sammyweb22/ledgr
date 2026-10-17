@@ -8,7 +8,7 @@ ExpenseTracker createSampleTracker() {
       title: 'Bus Fare',
       amountCents: 2000,
       category: Category.transport,
-      date: DateTime(2026, 9, 23),
+      date: DateTime(2026, 9, 10),
     ),
   );
 
@@ -18,7 +18,7 @@ ExpenseTracker createSampleTracker() {
       title: 'Electricity',
       amountCents: 1200,
       category: Category.bills,
-      date: DateTime(2026, 9, 12),
+      date: DateTime(2026, 9, 8),
     ),
   );
 
@@ -28,7 +28,7 @@ ExpenseTracker createSampleTracker() {
       title: 'Whatsapp',
       amountCents: 800,
       category: Category.other,
-      date: DateTime(2026, 10, 22),
+      date: DateTime(2026, 10, 9),
     ),
   );
 
@@ -38,7 +38,7 @@ ExpenseTracker createSampleTracker() {
       title: 'Movie Box',
       amountCents: 1000,
       category: Category.fun,
-      date: DateTime(2026, 10, 23),
+      date: DateTime(2026, 10, 10),
     ),
   );
 
@@ -48,7 +48,7 @@ ExpenseTracker createSampleTracker() {
       title: 'Lunch',
       amountCents: 2200,
       category: Category.food,
-      date: DateTime(2026, 10, 28),
+      date: DateTime(2026, 10, 14),
     ),
   );
   return tracker;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:ledgr_core/ledgr_core.dart';
 
 class AddExpenseScreen extends StatefulWidget {
@@ -81,6 +82,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+              ],
               validator: (value) {
                 final amount = double.tryParse(value ?? '');
                 if (amount == null) {
