@@ -28,6 +28,22 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<void> _openEditExpense(Expense expense) async {
+    final updated = await Navigator.push<Expense>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddExpenseScreen(expense: expense),
+      ),
+    );
+    if (updated == null || !mounted) {
+      return;
+    }
+
+    setState(() {
+      widget.tracker.update(updated);
+    });
+  }
+
   void _deleteExpense(Expense expense) {
     setState(() {
       widget.tracker.remove(expense.id);
@@ -95,6 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     title: Text(expense.title),
                     subtitle: Text(formatDate(expense.date)),
                     trailing: Text(formatCents(expense.amountCents)),
+                    onTap: () => _openEditExpense(expense),
                   ),
                 );
               },

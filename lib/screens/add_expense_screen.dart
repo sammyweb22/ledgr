@@ -5,7 +5,9 @@ import 'package:ledgr_core/ledgr_core.dart';
 import '../utils/format.dart';
 
 class AddExpenseScreen extends StatefulWidget {
-  const AddExpenseScreen({super.key});
+  const AddExpenseScreen({super.key, this.expense});
+
+  final Expense? expense;
 
   @override
   State<AddExpenseScreen> createState() => _AddExpenseScreenState();
@@ -17,6 +19,18 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   final _amountController = TextEditingController();
   Category _category = Category.food;
   DateTime _date = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    final existing = widget.expense;
+    if (existing != null) {
+      _titleController.text = existing.title;
+      _amountController.text = (existing.amountCents / 100).toStringAsFixed(2);
+      _category = existing.category;
+      _date = existing.date;
+    }
+  }
 
   @override
   void dispose() {
@@ -45,7 +59,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       return;
     }
     final expense = Expense(
-      id: DateTime.now().microsecondsSinceEpoch.toString(),
+      id:
+          widget.expense?.id ??
+          DateTime.now().microsecondsSinceEpoch.toString(),
       title: _titleController.text.trim(),
       amountCents: (double.parse(_amountController.text) * 100).round(),
       category: _category,
@@ -57,7 +73,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Add expense')),
+      appBar: AppBar(
+        title: Text(widget.expense == null ? 'Add expense' : 'Edit expense'),
+      ),
       body: Form(
         key: _formKey,
         child: ListView(
