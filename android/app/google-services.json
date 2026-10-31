@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "672046296508",
+    "project_id": "ledgr-284b2",
+    "storage_bucket": "ledgr-284b2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:672046296508:android:280eb5190903d167b74fb9",
+        "android_client_info": {
+          "package_name": "com.sammyweb22.ledgr"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJ1W6eKr9A25pLKViieaDQ6HG8UY2CC28"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
