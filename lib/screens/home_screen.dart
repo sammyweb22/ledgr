@@ -5,6 +5,7 @@ import 'package:ledgr_core/ledgr_core.dart';
 import '../providers/expenses_provider.dart';
 import '../utils/format.dart';
 import 'add_expense_screen.dart';
+import '../providers/auth_provider.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -72,6 +73,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: Center(
               child: Text('This month: ${formatCents(monthTotal)}'),
             ),
+          ),
+          IconButton(
+            tooltip: 'Sign out',
+            icon: const Icon(Icons.logout),
+            onPressed: () => ref.read(firebaseAuthProvider).signOut(),
           ),
         ],
       ),
