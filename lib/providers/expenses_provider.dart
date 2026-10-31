@@ -1,56 +1,83 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ledgr_core/ledgr_core.dart';
 
-import '../data/app_database.dart';
+import '../data/expense_firestore.dart';
+import 'auth_provider.dart';
 
-final databaseProvider = Provider<AppDatabase>((ref) {
-  final db = AppDatabase();
-  ref.onDispose(db.close);
-  return db;
-});
-
-final expensesProvider = AsyncNotifierProvider<ExpensesNotifier, List<Expense>>(
-  ExpensesNotifier.new,
+final firestoreProvider = Provider<FirebaseFirestore>(
+  (ref) => FirebaseFirestore.instance,
 );
 
-class ExpensesNotifier extends AsyncNotifier<List<Expense>> {
-  var _tracker = ExpenseTracker();
+final expensesCollectionProvider =
+    Provider<CollectionReference<Map<String, dynamic>>?>((ref) {
+      final user = ref.watch(authStateProvider).value;
+      if (user == null) {
+        return null;
+      }
+      return ref
+          .watch(firestoreProvider)
+          .collection('users')
+          .doc(user.uid)
+          .collection('expenses');
+    });
 
-  AppDatabase get _db => ref.read(databaseProvider);
+final expensesProvider =
+    StreamNotifierProvider<ExpensesNotifier, List<Expense>>(
+      ExpensesNotifier.new,
+    );
+
+List<Expense> _sorted(Iterable<Expense> expenses) {
+  final tracker = ExpenseTracker();
+  for (final expense in expenses) {
+    tracker.add(expense);
+  }
+  return tracker.sorted;
+}
+
+class ExpensesNotifier extends StreamNotifier<List<Expense>> {
+  CollectionReference<Map<String, dynamic>>? get _collection =>
+      ref.read(expensesCollectionProvider);
+
+  List<Expense> get _current => state.value ?? const [];
 
   @override
-  Future<List<Expense>> build() async {
-    final rows = await _db.select(_db.expenseRows).get();
-    _tracker = ExpenseTracker();
-    for (final row in rows) {
-      _tracker.add(row.toExpense());
+  Stream<List<Expense>> build() {
+    final collection = ref.watch(expensesCollectionProvider);
+    if (collection == null) {
+      return Stream.value(const []);
     }
-    return _tracker.sorted;
+    return collection.snapshots().map(
+      (snapshot) => _sorted(
+        snapshot.docs.map((doc) => expenseFromFirestore(doc.id, doc.data())),
+      ),
+    );
   }
 
   Future<void> add(Expense expense) async {
-    _tracker.add(expense);
-    state = AsyncData(_tracker.sorted);
-    await _db.into(_db.expenseRows).insert(expense.toRow());
+    state = AsyncData(_sorted([..._current, expense]));
+    await _collection?.doc(expense.id).set(expenseToFirestore(expense));
   }
 
   Future<void> edit(Expense expense) async {
-    _tracker.update(expense);
-    state = AsyncData(_tracker.sorted);
-    await _db.into(_db.expenseRows).insertOnConflictUpdate(expense.toRow());
+    state = AsyncData(
+      _sorted(_current.map((e) => e.id == expense.id ? expense : e)),
+    );
+    await _collection?.doc(expense.id).set(expenseToFirestore(expense));
   }
 
   Future<void> remove(String id) async {
-    _tracker.remove(id);
-    state = AsyncData(_tracker.sorted);
-    await (_db.delete(_db.expenseRows)..where((row) => row.id.equals(id))).go();
+    state = AsyncData(_current.where((e) => e.id != id).toList());
+    await _collection?.doc(id).delete();
   }
-
-  int totalForMonth(int year, int month) => _tracker.totalForMonth(year, month);
 }
 
 final monthTotalProvider = Provider<int>((ref) {
-  ref.watch(expensesProvider); // re-calculate whenever the expenses change
+  final expenses = ref.watch(expensesProvider).value ?? const <Expense>[];
+  final tracker = ExpenseTracker();
+  for (final expense in expenses) {
+    tracker.add(expense);
+  }
   final now = DateTime.now();
-  return ref.read(expensesProvider.notifier).totalForMonth(now.year, now.month);
+  return tracker.totalForMonth(now.year, now.month);
 });
