@@ -27,7 +27,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   }
 
   String _messageFor(String code) => switch (code) {
-    'weak passwords' => 'Please choose a stronger password.',
+    'weak password' => 'Please choose a stronger password.',
     'invalid-email' => 'That email address doesn\'t look right.',
     'invalid-credential' ||
     'wrong-password' ||
