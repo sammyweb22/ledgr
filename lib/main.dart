@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:ledgr_core/ledgr_core.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'data/sample_data.dart';
 import 'screens/home_screen.dart';
 
 void main() {
-  final tracker = createSampleTracker();
-  runApp(MainApp(tracker: tracker));
+  runApp(const ProviderScope(child: MainApp()));
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key, required this.tracker});
-
-  final ExpenseTracker tracker;
+  const MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +16,7 @@ class MainApp extends StatelessWidget {
       title: 'Ledgr',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(colorSchemeSeed: Colors.deepPurple),
-      home: HomeScreen(tracker: tracker),
+      home: const HomeScreen(),
     );
   }
 }

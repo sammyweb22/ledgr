@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ledgr_core/ledgr_core.dart';
 
+import '../providers/expenses_provider.dart';
 import '../utils/format.dart';
 import 'add_expense_screen.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, required this.tracker});
-
-  final ExpenseTracker tracker;
+class HomeScreen extends ConsumerStatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   Future<void> _openAddExpense() async {
     final expense = await Navigator.push<Expense>(
       context,
@@ -23,9 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
-    setState(() {
-      widget.tracker.add(expense);
-    });
+    ref.read(expensesProvider.notifier).add(expense);
   }
 
   Future<void> _openEditExpense(Expense expense) async {
@@ -39,15 +37,11 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
-    setState(() {
-      widget.tracker.update(updated);
-    });
+    ref.read(expensesProvider.notifier).update(updated);
   }
 
   void _deleteExpense(Expense expense) {
-    setState(() {
-      widget.tracker.remove(expense.id);
-    });
+    ref.read(expensesProvider.notifier).remove(expense.id);
 
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
@@ -57,9 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
           action: SnackBarAction(
             label: 'Undo',
             onPressed: () {
-              setState(() {
-                widget.tracker.add(expense);
-              });
+              ref.read(expensesProvider.notifier).add(expense);
             },
           ),
         ),
@@ -68,9 +60,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final expenses = widget.tracker.sorted;
-    final now = DateTime.now();
-    final monthTotal = widget.tracker.totalForMonth(now.year, now.month);
+    final expenses = ref.watch(expensesProvider);
+    final monthTotal = ref.watch(monthTotalProvider);
 
     return Scaffold(
       appBar: AppBar(
