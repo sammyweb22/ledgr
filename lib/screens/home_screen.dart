@@ -37,7 +37,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       return;
     }
 
-    ref.read(expensesProvider.notifier).update(updated);
+    ref.read(expensesProvider.notifier).edit(updated);
   }
 
   void _deleteExpense(Expense expense) {
@@ -60,7 +60,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final expenses = ref.watch(expensesProvider);
+    final expensesAsync = ref.watch(expensesProvider);
     final monthTotal = ref.watch(monthTotalProvider);
 
     return Scaffold(
@@ -75,38 +75,43 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ],
       ),
-      body: expenses.isEmpty
-          ? const Center(child: Text('No expenses yet'))
-          : ListView.builder(
-              itemCount: expenses.length,
-              itemBuilder: (context, index) {
-                final expense = expenses[index];
-                return Dismissible(
-                  key: ValueKey(expense.id),
-                  direction: DismissDirection.endToStart,
-                  background: Container(
-                    color: Theme.of(context).colorScheme.error,
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.only(right: 24),
-                    child: Icon(
-                      Icons.delete,
-                      color: Theme.of(context).colorScheme.onError,
+      body: expensesAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stackTrace) =>
+            Center(child: Text('Could not load expenses: $error')),
+        data: (expenses) => expenses.isEmpty
+            ? const Center(child: Text('No expenses yet'))
+            : ListView.builder(
+                itemCount: expenses.length,
+                itemBuilder: (context, index) {
+                  final expense = expenses[index];
+                  return Dismissible(
+                    key: ValueKey(expense.id),
+                    direction: DismissDirection.endToStart,
+                    background: Container(
+                      color: Theme.of(context).colorScheme.error,
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.only(right: 24),
+                      child: Icon(
+                        Icons.delete,
+                        color: Theme.of(context).colorScheme.onError,
+                      ),
                     ),
-                  ),
-                  onDismissed: (direction) => _deleteExpense(expense),
-                  child: ListTile(
-                    leading: Text(
-                      expense.category.emoji,
-                      style: const TextStyle(fontSize: 28),
+                    onDismissed: (direction) => _deleteExpense(expense),
+                    child: ListTile(
+                      leading: Text(
+                        expense.category.emoji,
+                        style: const TextStyle(fontSize: 28),
+                      ),
+                      title: Text(expense.title),
+                      subtitle: Text(formatDate(expense.date)),
+                      trailing: Text(formatCents(expense.amountCents)),
+                      onTap: () => _openEditExpense(expense),
                     ),
-                    title: Text(expense.title),
-                    subtitle: Text(formatDate(expense.date)),
-                    trailing: Text(formatCents(expense.amountCents)),
-                    onTap: () => _openEditExpense(expense),
-                  ),
-                );
-              },
-            ),
+                  );
+                },
+              ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _openAddExpense,
         child: const Icon(Icons.add),

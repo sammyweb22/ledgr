@@ -1,31 +1,49 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ledgr_core/ledgr_core.dart';
 
-import '../data/sample_data.dart';
+import '../data/app_database.dart';
 
-final expensesProvider = NotifierProvider<ExpensesNotifier, List<Expense>>(
+final databaseProvider = Provider<AppDatabase>((ref) {
+  final db = AppDatabase();
+  ref.onDispose(db.close);
+  return db;
+});
+
+final expensesProvider = AsyncNotifierProvider<ExpensesNotifier, List<Expense>>(
   ExpensesNotifier.new,
 );
 
-class ExpensesNotifier extends Notifier<List<Expense>> {
-  final _tracker = createSampleTracker();
+class ExpensesNotifier extends AsyncNotifier<List<Expense>> {
+  var _tracker = ExpenseTracker();
+
+  AppDatabase get _db => ref.read(databaseProvider);
 
   @override
-  List<Expense> build() => _tracker.sorted;
+  Future<List<Expense>> build() async {
+    final rows = await _db.select(_db.expenseRows).get();
+    _tracker = ExpenseTracker();
+    for (final row in rows) {
+      _tracker.add(row.toExpense());
+    }
+    return _tracker.sorted;
+  }
 
-  void add(Expense expense) {
+  Future<void> add(Expense expense) async {
     _tracker.add(expense);
-    state = _tracker.sorted;
+    state = AsyncData(_tracker.sorted);
+    await _db.into(_db.expenseRows).insert(expense.toRow());
   }
 
-  void update(Expense expense) {
+  Future<void> edit(Expense expense) async {
     _tracker.update(expense);
-    state = _tracker.sorted;
+    state = AsyncData(_tracker.sorted);
+    await _db.into(_db.expenseRows).insertOnConflictUpdate(expense.toRow());
   }
 
-  void remove(String id) {
+  Future<void> remove(String id) async {
     _tracker.remove(id);
-    state = _tracker.sorted;
+    state = AsyncData(_tracker.sorted);
+    await (_db.delete(_db.expenseRows)..where((row) => row.id.equals(id))).go();
   }
 
   int totalForMonth(int year, int month) => _tracker.totalForMonth(year, month);
