@@ -72,4 +72,22 @@ void main() {
     expect(result?.amountCents, 3575);
     expect(find.text('Save expense'), findsNothing);
   });
+
+  testWidgets('pre-fills the form when editing an expense', (tester) async {
+    final lunch = Expense(
+      id: '1',
+      title: 'Lunch',
+      amountCents: 1250,
+      category: Category.food,
+      date: DateTime(2026, 10, 15),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(home: AddExpenseScreen(expense: lunch)),
+    );
+
+    expect(find.text('Edit expense'), findsOneWidget);
+    expect(find.text('Lunch'), findsOneWidget);
+    expect(find.text('12.50'), findsOneWidget);
+  });
 }
