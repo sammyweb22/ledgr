@@ -23,7 +23,7 @@ void main() {
     expect(find.text('Please enter a number'), findsOneWidget);
   });
 
-  testWidgets('shows errors when saving an empty form', (tester) async {
+  testWidgets('shows an error when the amount is zero', (tester) async {
     await openForm(tester);
 
     await tester.enterText(find.widgetWithText(TextFormField, 'Amount'), '0');
