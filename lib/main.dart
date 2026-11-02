@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'theme/app_theme.dart';
 import 'firebase_options.dart';
 import 'screens/auth_gate.dart';
 
@@ -19,7 +20,9 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       title: 'Ledgr',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(colorSchemeSeed: Colors.deepPurple),
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode: ThemeMode.system,
       home: const AuthGate(),
     );
   }
