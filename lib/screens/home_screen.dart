@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ledgr_core/ledgr_core.dart';
 
 import '../providers/expenses_provider.dart';
+import '../providers/theme_provider.dart';
 import '../utils/format.dart';
 import 'add_expense_screen.dart';
 import '../providers/auth_provider.dart';
@@ -73,6 +74,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: Center(
               child: Text('This month: ${formatMoney(monthTotal)}'),
             ),
+          ),
+          PopupMenuButton<ThemeMode>(
+            tooltip: 'Theme',
+            icon: const Icon(Icons.brightness_6),
+            initialValue: ref.watch(themeModeProvider),
+            onSelected: (mode) =>
+                ref.read(themeModeProvider.notifier).setMode(mode),
+            itemBuilder: (context) => const [
+              PopupMenuItem(value: ThemeMode.system, child: Text('System')),
+              PopupMenuItem(value: ThemeMode.light, child: Text('Light')),
+              PopupMenuItem(value: ThemeMode.dark, child: Text('Dark')),
+            ],
           ),
           IconButton(
             tooltip: 'Sign out',
