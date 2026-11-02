@@ -71,7 +71,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: Center(
-              child: Text('This month: ${formatCents(monthTotal)}'),
+              child: Text('This month: ${formatMoney(monthTotal)}'),
             ),
           ),
           IconButton(
@@ -111,7 +111,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                       title: Text(expense.title),
                       subtitle: Text(formatDate(expense.date)),
-                      trailing: Text(formatCents(expense.amountCents)),
+                      trailing: Text(formatMoney(expense.amountCents)),
                       onTap: () => _openEditExpense(expense),
                     ),
                   );

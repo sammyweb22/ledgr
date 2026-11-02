@@ -58,14 +58,14 @@ void main() {
     await pumpHome(tester, [lunch, bus]);
 
     expect(find.text('Lunch'), findsOneWidget);
-    expect(find.text('\$12.50'), findsOneWidget);
+    expect(find.text('₦12.50'), findsOneWidget);
     expect(find.text('Bus fare'), findsOneWidget);
   });
 
   testWidgets('month total only counts this month', (tester) async {
     await pumpHome(tester, [lunch, bus, oldRent]);
 
-    expect(find.text('This month: \$15.50'), findsOneWidget);
+    expect(find.text('This month: ₦15.50'), findsOneWidget);
   });
 
   testWidgets('shows a message when there are no expenses', (tester) async {
@@ -84,7 +84,7 @@ void main() {
 
     expect(find.text('Lunch'), findsNothing);
     expect(find.text('Deleted "Lunch"'), findsOneWidget);
-    expect(find.text('This month: \$3.00'), findsOneWidget);
+    expect(find.text('This month: ₦3.00'), findsOneWidget);
   });
 
   testWidgets('undo brings a deleted expense back', (tester) async {
@@ -97,6 +97,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Lunch'), findsOneWidget);
-    expect(find.text('This month: \$15.50'), findsOneWidget);
+    expect(find.text('This month: ₦15.50'), findsOneWidget);
   });
 }

@@ -13,6 +13,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_riverpod: ^3.4.3
+  intl: ^0.20.3
   ledgr_core:
     path: ../ledgr_core
 
