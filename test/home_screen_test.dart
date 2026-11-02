@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ledgr/providers/expenses_provider.dart';
+import 'package:ledgr/providers/theme_provider.dart';
 import 'package:ledgr/screens/home_screen.dart';
 import 'package:ledgr_core/ledgr_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FakeExpensesNotifier extends ExpensesNotifier {
   FakeExpensesNotifier(this.initial);
@@ -41,9 +43,13 @@ final oldRent = Expense(
 );
 
 Future<void> pumpHome(WidgetTester tester, List<Expense> expenses) async {
+  SharedPreferences.setMockInitialValues({});
+  final prefs = await SharedPreferences.getInstance();
+
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
         expensesProvider.overrideWith(() => FakeExpensesNotifier(expenses)),
         expensesCollectionProvider.overrideWithValue(null),
       ],
