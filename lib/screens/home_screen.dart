@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ledgr_core/ledgr_core.dart';
 
+import '../providers/auth_provider.dart';
 import '../providers/expenses_provider.dart';
 import '../providers/theme_provider.dart';
 import '../utils/format.dart';
 import 'add_expense_screen.dart';
-import '../providers/auth_provider.dart';
+import 'stats_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -69,6 +70,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       appBar: AppBar(
         title: const Text('Ledgr'),
         actions: [
+          IconButton(
+            tooltip: 'Stats',
+            icon: const Icon(Icons.pie_chart),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const StatsScreen()),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: Center(

@@ -72,12 +72,24 @@ class ExpensesNotifier extends StreamNotifier<List<Expense>> {
   }
 }
 
-final monthTotalProvider = Provider<int>((ref) {
+final trackerProvider = Provider<ExpenseTracker>((ref) {
   final expenses = ref.watch(expensesProvider).value ?? const <Expense>[];
   final tracker = ExpenseTracker();
   for (final expense in expenses) {
     tracker.add(expense);
   }
+  return tracker;
+});
+
+final monthTotalProvider = Provider<int>((ref) {
   final now = DateTime.now();
-  return tracker.totalForMonth(now.year, now.month);
+  return ref.watch(trackerProvider).totalForMonth(now.year, now.month);
+});
+
+final categoryBreakdownProvider = Provider<Map<Category, int>>((ref) {
+  final breakdown = ref.watch(trackerProvider).breakdown();
+  return {
+    for (final entry in breakdown.entries)
+      if (entry.value > 0) entry.key: entry.value,
+  };
 });
