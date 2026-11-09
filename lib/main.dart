@@ -11,10 +11,12 @@ import 'theme/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  final prefs = await SharedPreferences.getInstance();
   final notifications = NotificationService();
-  await notifications.init();
+  final (_, prefs, _) = await (
+    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
+    SharedPreferences.getInstance(),
+    notifications.init(),
+  ).wait;
   runApp(
     ProviderScope(
       overrides: [
