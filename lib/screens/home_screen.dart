@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ledgr_core/ledgr_core.dart';
 
 import '../providers/auth_provider.dart';
+import '../providers/budget_provider.dart';
 import '../providers/expenses_provider.dart';
 import '../providers/theme_provider.dart';
+import '../services/notification_service.dart';
 import '../utils/format.dart';
 import 'add_expense_screen.dart';
 import 'stats_screen.dart';
@@ -26,7 +28,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       return;
     }
 
+    final before = ref.read(monthTotalProvider);
     ref.read(expensesProvider.notifier).add(expense);
+    _alertIfOverBudget(before);
   }
 
   Future<void> _openEditExpense(Expense expense) async {
@@ -40,7 +44,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       return;
     }
 
+    final before = ref.read(monthTotalProvider);
     ref.read(expensesProvider.notifier).edit(updated);
+    _alertIfOverBudget(before);
   }
 
   void _deleteExpense(Expense expense) {
@@ -59,6 +65,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
       );
+  }
+
+  void _alertIfOverBudget(int before) {
+    final budget = ref.read(budgetProvider);
+    final after = ref.read(monthTotalProvider);
+    if (budget != null && before <= budget && after > budget) {
+      ref
+          .read(notificationServiceProvider)
+          .showOverBudget(
+            spent: formatMoney(after),
+            budget: formatMoney(budget),
+          );
+    }
   }
 
   @override

@@ -6,6 +6,7 @@ import 'package:ledgr_core/ledgr_core.dart';
 
 import '../providers/budget_provider.dart';
 import '../providers/expenses_provider.dart';
+import '../services/notification_service.dart';
 import '../utils/format.dart';
 
 class StatsScreen extends ConsumerWidget {
@@ -86,6 +87,9 @@ class _BudgetCard extends ConsumerWidget {
       return;
     }
     ref.read(budgetProvider.notifier).setBudget(result == 0 ? null : result);
+    if (result > 0) {
+      await ref.read(notificationServiceProvider).requestPermission();
+    }
   }
 
   @override
