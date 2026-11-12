@@ -75,6 +75,39 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     }
   }
 
+  Future<void> _resetPassword() async {
+    final email = _emailController.text.trim();
+    if (!email.contains('@')) {
+      setState(() {
+        _errorMessage = 'Enter your email above, then tap Forgot password.';
+      });
+      return;
+    }
+
+    try {
+      await ref.read(firebaseAuthProvider).sendPasswordResetEmail(email: email);
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _errorMessage = null;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'If an account exists for that email, a reset link is on its way.',
+          ),
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = _messageFor(e.code);
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -123,6 +156,14 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                       return null;
                     },
                   ),
+                  if (!_isSignUp)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: _isLoading ? null : _resetPassword,
+                        child: const Text('Forgot password?'),
+                      ),
+                    ),
                   if (_errorMessage case final message?) ...[
                     const SizedBox(height: 16),
                     Text(
